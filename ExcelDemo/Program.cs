@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 
 namespace ExcelDemo
 {
@@ -31,11 +33,23 @@ namespace ExcelDemo
             //Add a WorkSheet to the file (aba do Excel)
             var ws = package.Workbook.Worksheets.Add("MainReport");
 
-            //Add load the list of people range begin in the A1 cell
-            var range = ws.Cells["A1"].LoadFromCollection(people, true);
+            //Add load the list of people range begin in the A2 cell
+            var range = ws.Cells["A2"].LoadFromCollection(people, true);
 
             //Preencher as colunas com os dados
             range.AutoFitColumns();
+
+
+            //Formats the header
+            ws.Cells["A1"].Value = "Our Cool Report";
+            ws.Cells["A1:C1"].Merge = true;
+            ws.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            ws.Row(1).Style.Font.Size = 24;
+            ws.Row(1).Style.Font.Color.SetColor(Color.Blue);
+
+            ws.Row(2).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            ws.Row(2).Style.Font.Bold = true;
+            ws.Column(3).Width = 20;
 
             await package.SaveAsync();
 
