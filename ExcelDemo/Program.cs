@@ -21,9 +21,48 @@ namespace ExcelDemo
 
             await SaveExcelFile(people, file);
 
+            List<PersonModel> peopleFromExcel = await LoadExcelFile(file);
+
+            foreach (var p in peopleFromExcel)
+            {
+                Console.WriteLine($"{p.Id}{p.FirstName} {p.LasttName}");
+            }
+
         }
 
-        private static async Task SaveExcelFile(List<PersonModel> people, FileInfo file)
+        private static async Task<List<PersonModel>> LoadExcelFile(FileInfo file)
+        {
+            List<PersonModel> output = new();
+
+            using var package = new ExcelPackage(file);
+
+            await package.LoadAsync(file);
+
+            var ws = package.Workbook.Worksheets[0];
+
+
+            int row = 3;
+            int col = 1;
+
+            while (string.IsNullOrWhiteSpace(ws.Cells[row, col].Value?.ToString()) == false)
+            {
+                PersonModel p = new();
+                p.Id = int.Parse(ws.Cells[row, col].Value.ToString());
+                p.FirstName = ws.Cells[row, col + 1].Value.ToString();
+                p.LasttName = ws.Cells[row, col + 2].Value.ToString();
+                output.Add(p);
+                row += 1;
+
+
+            }
+
+            return output;
+
+
+        }
+    
+
+    private static async Task SaveExcelFile(List<PersonModel> people, FileInfo file)
         {
             DeleteIfExists(file);
 
@@ -68,8 +107,8 @@ namespace ExcelDemo
             List<PersonModel> output = new()
             {
                 new() {Id = 1, FirstName = "Tim", LasttName = "Corey"},
-                new() {Id = 1, FirstName = "Sue", LasttName = "Storm"},
-                new() {Id = 1, FirstName = "Jane", LasttName = "Smith"}
+                new() {Id = 2, FirstName = "Sue", LasttName = "Storm"},
+                new() {Id = 3, FirstName = "Jane", LasttName = "Smith"}
             };
 
             return output;
