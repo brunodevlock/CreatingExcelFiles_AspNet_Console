@@ -24,6 +24,21 @@ namespace ExcelDemo
         private static async Task SaveExcelFile(List<PersonModel> people, FileInfo file)
         {
             DeleteIfExists(file);
+
+            //Create a Excel file
+            using var package = new ExcelPackage(file);
+
+            //Add a WorkSheet to the file (aba do Excel)
+            var ws = package.Workbook.Worksheets.Add("MainReport");
+
+            //Add load the list of people range begin in the A1 cell
+            var range = ws.Cells["A1"].LoadFromCollection(people, true);
+
+            //Preencher as colunas com os dados
+            range.AutoFitColumns();
+
+            await package.SaveAsync();
+
         }
 
         private static void DeleteIfExists(FileInfo file)
